@@ -35,7 +35,8 @@ DB_PASSWORD = os.getenv("DB_PASSWORD", "password")
 DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_PORT = int(os.getenv("DB_PORT", "5432"))
 
-app = FastAPI(title="User Manager (DB/LDAP aware)")
+app = FastAPI(title="User Manager (DB/LDAP aware)",
+docs_url="/authenticate/docs")
 
 class UserOut(BaseModel):
     id: Optional[int]
@@ -238,13 +239,13 @@ def modify_ldap_group_membership(group_dn: str, user_dn: str, action: str):
         conn.unbind()
 
 # ---------- API endpoints ----------
-@app.get("/user/search", response_model=List[UserOut])
+@app.get("/authenticate/user/search", response_model=List[UserOut])
 def user_search(q: str = Query(..., min_length=1), limit: int = 25):
     if LDAP_SERVER_AVAILABLE and LDAP_GROUP_FILTER:
         return search_ldap(q, limit)
     return search_db_users(q, limit)
 
-@app.post("/user/assign")
+@app.post("/authenticate/user/assign")
 def user_assign(req: AssignRequest = Body(...)):
     """
     Assign or remove a user to/from a target.
@@ -292,7 +293,7 @@ def user_assign(req: AssignRequest = Body(...)):
             assign_db_generic(req.identifier, req.identifier_type, req.action, req.target_type, req.target)
             return {"status": "ok"}
 
-@app.get("/ldap_users/search", response_model=List[UserOut])
+@app.get("/authenticate/ldap_users/search", response_model=List[UserOut])
 def ldap_users_search(q: str = Query(..., min_length=1), limit: int = 25):
     """
     Explicit LDAP search endpoint. Returns 400 if LDAP not enabled.
@@ -302,6 +303,6 @@ def ldap_users_search(q: str = Query(..., min_length=1), limit: int = 25):
     return search_ldap(q, limit)
 
 # health
-@app.get("/health")
+@app.get("/authenticate/health")
 def health():
     return {"ok": True, "ldap": LDAP_SERVER_AVAILABLE and LDAP_GROUP_FILTER}
