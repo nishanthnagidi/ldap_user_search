@@ -20,15 +20,15 @@ def _bool_env(name: str, default: bool = False) -> bool:
     return str(v).strip().lower() in ("1", "true", "yes", "y")
 
 # env variables (match repo)
-LDAP_SERVER_URI = os.getenv("LDAP_SERVER_URI", "").strip()
-LDAP_ORG_UNIT = os.getenv("LDAP_ORG_UNIT", "").strip()            # AUTH_LDAP_ORG_UNIT
-LDAP_SEARCH_ATTRIBUTE = os.getenv("LDAP_SEARCH_ATTRIBUTE", "").strip()  # SEARCH_ATTRIBUTE
+LDAP_SERVER_URI = "LDAP_SERVER_URI"
+LDAP_ORG_UNIT = "LDAP_ORG_UNIT"           # AUTH_LDAP_ORG_UNIT
+LDAP_SEARCH_ATTRIBUTE = "LDAP_SEARCH_ATTRIBUTE"
 LDAP_SERVER_AVAILABLE = "LDAP_SERVER_AVAILABLE"
 LDAP_GROUP_FILTER = "LDAP_GROUP_FILTER"
-LDAP_ALLOWED_GROUPS = os.getenv("LDAP_ALLOWED_GROUPS", "").strip().strip("'\"")
+LDAP_ALLOWED_GROUPS = "LDAP_ALLOWED_GROUPS"
 # LDAP_BIND_DN = os.getenv("LDAP_BIND_DN", "").strip()               # optional
 # LDAP_BIND_PASSWORD = os.getenv("LDAP_BIND_PASSWORD", "").strip()   # optional
-LDAP_GROUP_ATTRIBUTE = os.getenv("LDAP_GROUP_ATTRIBUTE", "member").strip()  # default group-of-names
+LDAP_GROUP_ATTRIBUTE = "LDAP_GROUP_ATTRIBUTE"
 
 # DB settings (reuse repo env names)
 DB_NAME = os.getenv("DB_NAME", "ADaM")
