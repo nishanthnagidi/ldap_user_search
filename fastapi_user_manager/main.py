@@ -1,3 +1,4 @@
+from re import L
 from typing import List, Optional, Dict
 import os
 from fastapi import FastAPI, HTTPException, Body, Query
@@ -10,6 +11,7 @@ from dotenv import load_dotenv
 # load repo .env
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 load_dotenv(os.path.join(ROOT, ".env"))
+load_dotenv(os.path.join(ROOT, ".env"), override=True)
 
 def _bool_env(name: str, default: bool = False) -> bool:
     v = os.getenv(name)
@@ -21,8 +23,8 @@ def _bool_env(name: str, default: bool = False) -> bool:
 LDAP_SERVER_URI = os.getenv("LDAP_SERVER_URI", "").strip()
 LDAP_ORG_UNIT = os.getenv("LDAP_ORG_UNIT", "").strip()            # AUTH_LDAP_ORG_UNIT
 LDAP_SEARCH_ATTRIBUTE = os.getenv("LDAP_SEARCH_ATTRIBUTE", "").strip()  # SEARCH_ATTRIBUTE
-LDAP_SERVER_AVAILABLE = _bool_env("LDAP_SERVER_AVAILABLE", False)
-LDAP_GROUP_FILTER = _bool_env("LDAP_GROUP_FILTER", False)
+LDAP_SERVER_AVAILABLE = "LDAP_SERVER_AVAILABLE"
+LDAP_GROUP_FILTER = "LDAP_GROUP_FILTER"
 LDAP_ALLOWED_GROUPS = os.getenv("LDAP_ALLOWED_GROUPS", "").strip().strip("'\"")
 # LDAP_BIND_DN = os.getenv("LDAP_BIND_DN", "").strip()               # optional
 # LDAP_BIND_PASSWORD = os.getenv("LDAP_BIND_PASSWORD", "").strip()   # optional
@@ -210,6 +212,10 @@ def search_ldap(query: str, limit: int = 25) -> List[UserOut]:
                 last_name=e.get('sn', [None])[0] if isinstance(e.get('sn', None), list) else e.get('sn'),
             ))
         return results
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=400, detail=f"LDAP search failed: {e}")
     finally:
         conn.unbind()
 
